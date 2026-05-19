@@ -41,25 +41,25 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Development Notes
 
-### Bun — Why It Feels Faster
+### Bun DX & Speed
 
-Bun is a newer JavaScript runtime, similar to Node.js, but built for speed. Think of it like switching from a regular printer to a laser printer — it does the same job, just much faster. When setting up a project, developers first need to "install" all the tools and libraries the project depends on. With the traditional tool (npm), this took about 40–60 seconds. With Bun, the exact same step finished in under 3 seconds. The dev server (the local preview you use while building) also starts almost instantly. For a project like this where you're constantly tweaking and checking the result, that speed adds up.
+Switching to Bun made a noticeable difference. Cold installs that took 40–60s with npm finished in under 3s with Bun. The `bun.lock` file is binary, keeping diffs clean in version control. `bun dev` startup is also faster — the dev server is ready almost instantly. Overall, Bun felt like the right choice for a project where iteration speed matters.
 
-### Tailwind CSS v4 — What Changed
+### Tailwind CSS v4 — What's Different
 
-Tailwind CSS is a tool that makes it easy to style a website without writing raw CSS from scratch — it provides a library of pre-built style "building blocks." Version 4 is a significant update that changed how the tool is configured. In the older version, you had to maintain a separate configuration file (`tailwind.config.js`) telling Tailwind which files to scan and what custom values to use. In v4, all of that moves directly into the CSS file itself using a new `@theme` syntax. The result: one less file to manage, and the design tokens (colors, spacing, fonts) live right next to the styles that use them. It's a cleaner mental model, similar to how Figma keeps styles and components in the same file rather than a separate style guide document.
+Tailwind v4 removes `tailwind.config.js` entirely. Configuration now lives in CSS via `@theme` and `@import "tailwindcss"` — no `content` glob arrays, no plugin config files. Design tokens are CSS custom properties by default. The migration required learning a new mental model, but the result is cleaner: styles and tokens coexist in one CSS file, and there's no build config to maintain. Shadcn's `--defaults` init worked cleanly with v4 out of the box.
 
 ### Scrollbar Design
 
-Browsers have traditionally had their own scrollbar styles, and customizing them required using browser-specific hacks that weren't part of any official standard. The modern approach — which this project uses — relies on two official CSS properties: `scrollbar-width` (controls thickness) and `scrollbar-color` (controls the color). These are now part of the web standard, documented on MDN (Mozilla's official web reference). The scrollbar here is intentionally thin and semi-transparent so it doesn't distract from the color content, and it automatically adjusts for dark and light mode.
+Implemented using the [CSS Scrollbars Styling](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_scrollbars_styling) specification — specifically `scrollbar-width: thin` and `scrollbar-color`. This is the modern, standards-based approach without relying on the legacy `::-webkit-scrollbar` pseudo-element. It's natively supported in Firefox and Chrome 121+. The color uses `oklch` with low opacity for a semi-transparent, non-intrusive look that adapts to both light and dark themes.
 
 ### Mobile Optimization & Font
 
-The entire layout is a single vertical column, designed to be comfortable with one thumb on a phone screen. Every tappable element — the color swatch button, the text input, and each color card — is at least 48×48 pixels. This follows Apple and Google's touch target guidelines, which recommend that minimum size to prevent accidental taps. The font is Geist Sans, designed by Vercel. It was chosen because it renders the dense numerical values (like `oklch(0.627 0.258 29.2)`) clearly and crisply even at small sizes — readability was the priority over personality here.
+The layout is a single column (`max-w-lg`) with generous padding, designed for one-handed use. All interactive elements — the color picker button, HEX input, and color model cards — are minimum 48×48px, following touch target guidelines. Geist Sans was chosen for its clean geometry and excellent legibility at small sizes on screen, which matters when displaying dense numeric values like `oklch(0.627 0.258 29.2)`.
 
 ### Deployment Platform
 
-Vercel is the company behind Next.js, so deploying a Next.js project there requires zero extra configuration — it already knows how to build and serve it. Once the GitHub repository is connected, every time new code is pushed, Vercel automatically rebuilds and redeploys the site within about a minute. It also runs on a global network, meaning the site loads fast regardless of where the visitor is located. The first deployment was done entirely from the terminal in a single command.
+Vercel was the natural choice for a Next.js project — zero configuration, automatic preview deployments per branch, and a global edge network. The CLI (`bunx vercel --prod`) made the first deployment a single command.
 
 ---
 
